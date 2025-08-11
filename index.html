@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Portfolio Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a0a;
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .terminal {
+            height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(45deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .terminal-title {
+            color: #00ff41;
+            font-size: 18px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .close { background: #ff5f56; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #27ca3f; }
+
+        .output {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .output::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .output::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
+
+        .line {
+            margin-bottom: 5px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .prompt {
+            color: #00ff41;
+            text-shadow: 0 0 5px #00ff41;
+        }
+
+        .command {
+            color: #ffffff;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .success {
+            color: #4ecdc4;
+        }
+
+        .warning {
+            color: #ffe66d;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 255, 65, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #00ff41;
+        }
+
+        .input-prompt {
+            color: #00ff41;
+            margin-right: 10px;
+            text-shadow: 0 0 5px #00ff41;
+        }
+
+        #commandInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .boot-sequence {
+            color: #00ff41;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .ascii-art {
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            font-size: 12px;
+            line-height: 1.2;
+            margin: 20px 0;
+        }
+
+        .help-command {
+            color: #4ecdc4;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .help-command:hover {
+            color: #ffffff;
+        }
+
+        .project-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #00ff41;
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        .typing-effect {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end);
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-title">portfolio_terminal_v1.0</div>
+            <div class="terminal-controls">
+                <div class="control-btn close"></div>
+                <div class="control-btn minimize"></div>
+                <div class="control-btn maximize"></div>
+            </div>
+        </div>
+        
+        <div class="output" id="output">
+            <div class="boot-sequence">
+                <div class="typing-effect">Initialisation du système...</div>
+                <div class="ascii-art">
+    ██████╗  ██████╗ ██████╗ ████████╗███████╗ ██████╗ ██╗     ██╗ ██████╗ 
+    ██╔══██╗██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝██╔═══██╗██║     ██║██╔═══██╗
+    ██████╔╝██║   ██║██████╔╝   ██║   █████╗  ██║   ██║██║     ██║██║   ██║
+    ██╔═══╝ ██║   ██║██╔══██╗   ██║   ██╔══╝  ██║   ██║██║     ██║██║   ██║
+    ██║     ╚██████╔╝██║  ██║   ██║   ██║     ╚██████╔╝███████╗██║╚██████╔╝
+    ╚═╝      ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝      ╚═════╝ ╚══════╝╚═╝ ╚═════╝ 
+                </div>
+                <div class="line"><span class="success">✓</span> Système chargé avec succès</div>
+                <div class="line"><span class="success">✓</span> Connexion établie</div>
+                <div class="line"><span class="warning">!</span> Tapez 'help' pour voir les commandes disponibles</div>
+            </div>
+        </div>
+        
+        <div class="input-line">
+            <span class="input-prompt">visitor@portfolio:~$</span>
+            <input type="text" id="commandInput" autocomplete="off" autofocus>
+            <span class="cursor">|</span>
+        </div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        const input = document.getElementById('commandInput');
+        
+        // Données du portfolio - PERSONNALISEZ ICI
+        const portfolioData = {
+            name: "Souleiman Guedi Harreh",
+            title: "Développeur Full Stack & Junior Penetration Tester",
+            email: "Souleimangeudi@gmail.com",
+            github: "https://github.com/Souleiman22",
+            linkedin: "https://linkedin.com/in/souleimanguediharreh",
+            skills: ["JavaScript", "Python", "HTML", "CSS", "Junior Penetration Tester"],
+            projects: [
+                {
+                    name: "Projet E-commerce",
+                    tech: "React, HTML, CSS, JavaScript",
+                    description: "Application e-commerce complète avec interface responsive",
+                    url: "https://github.com/votre-username/ecommerce"
+                },
+                {
+                    name: "Portfolio Sécurisé",
+                    tech: "HTML, CSS, JavaScript",
+                    description: "Portfolio personnel avec mesures de sécurité intégrées",
+                    url: "https://github.com/votre-username/secure-portfolio"
+                },
+                {
+                    name: "Scanner de Vulnérabilités",
+                    tech: "Python, Requests",
+                    description: "Script Python pour détecter les vulnérabilités web basiques",
+                    url: "https://github.com/votre-username/vuln-scanner"
+                }
+            ],
+            writeups: [
+                {
+                    title: "TryHackMe - Basic Pentesting",
+                    difficulty: "Facile",
+                    description: "Write-up détaillé sur l'énumération et l'exploitation d'une machine Linux",
+                    date: "2024",
+                    url: "https://github.com/votre-username/writeups/basic-pentesting"
+                },
+                {
+                    title: "HackTheBox - Legacy",
+                    difficulty: "Facile",
+                    description: "Exploitation d'une machine Windows vulnérable via SMB",
+                    date: "2024",
+                    url: "https://github.com/votre-username/writeups/htb-legacy"
+                },
+                {
+                    title: "DVWA - SQL Injection",
+                    difficulty: "Moyen",
+                    description: "Guide complet sur l'exploitation des injections SQL",
+                    date: "2024",
+                    url: "https://github.com/votre-username/writeups/dvwa-sqli"
+                }
+            ]
+        };
+        
+        const commands = {
+            help: () => {
+                return `
+<div class="line"><span class="success">Commandes disponibles:</span></div>
+<div class="line">  <span class="help-command">about</span>      - À propos de moi</div>
+<div class="line">  <span class="help-command">skills</span>     - Mes compétences techniques</div>
+<div class="line">  <span class="help-command">projects</span>   - Mes projets de développement</div>
+<div class="line">  <span class="help-command">writeups</span>   - Mes write-ups de cybersécurité</div>
+<div class="line">  <span class="help-command">contact</span>    - Informations de contact</div>
+<div class="line">  <span class="help-command">experience</span> - Mon expérience professionnelle</div>
+<div class="line">  <span class="help-command">clear</span>      - Nettoyer le terminal</div>
+<div class="line">  <span class="help-command">matrix</span>     - Mode Matrix 😎</div>
+                `;
+            },
+            
+            about: () => {
+                return `
+<div class="line"><span class="success">À propos de ${portfolioData.name}</span></div>
+<div class="line">Titre: ${portfolioData.title}</div>
+<div class="line">Passionné par le développement web et la cybersécurité.</div>
+<div class="line">J'aime créer des solutions élégantes et sécurisées pour des problèmes complexes.</div>
+<div class="line">En apprentissage constant en développement et en tests de pénétration.</div>
+<div class="line">Toujours prêt à relever de nouveaux défis techniques et sécuritaires.</div>
+                `;
+            },
+            
+            skills: () => {
+                let skillsHtml = '<div class="line"><span class="success">Compétences techniques:</span></div>';
+                portfolioData.skills.forEach(skill => {
+                    skillsHtml += `<div class="line">  ▸ ${skill}</div>`;
+                });
+                return skillsHtml;
+            },
+            
+            projects: () => {
+                let projectsHtml = '<div class="line"><span class="success">Projets de développement:</span></div>';
+                portfolioData.projects.forEach((project, index) => {
+                    projectsHtml += `
+                    <div class="project-item">
+                        <div><span class="warning">${index + 1}. ${project.name}</span></div>
+                        <div>Technologies: ${project.tech}</div>
+                        <div>Description: ${project.description}</div>
+                        <div>URL: <a href="${project.url}" target="_blank" style="color: #4ecdc4;">${project.url}</a></div>
+                    </div>
+                    `;
+                });
+                return projectsHtml;
+            },
+            
+            writeups: () => {
+                let writeupsHtml = '<div class="line"><span class="success">Write-ups de cybersécurité:</span></div>';
+                portfolioData.writeups.forEach((writeup, index) => {
+                    const difficultyColor = writeup.difficulty === 'Facile' ? '#4ecdc4' : 
+                                          writeup.difficulty === 'Moyen' ? '#ffe66d' : '#ff6b6b';
+                    writeupsHtml += `
+                    <div class="project-item">
+                        <div><span class="warning">${index + 1}. ${writeup.title}</span></div>
+                        <div>Difficulté: <span style="color: ${difficultyColor};">${writeup.difficulty}</span></div>
+                        <div>Description: ${writeup.description}</div>
+                        <div>Date: ${writeup.date}</div>
+                        <div>Lien: <a href="${writeup.url}" target="_blank" style="color: #4ecdc4;">${writeup.url}</a></div>
+                    </div>
+                    `;
+                });
+                return writeupsHtml;
+            },
+            
+            contact: () => {
+                return `
+<div class="line"><span class="success">Informations de contact:</span></div>
+<div class="line">📧 Email: <a href="mailto:${portfolioData.email}" style="color: #4ecdc4;">${portfolioData.email}</a></div>
+<div class="line">🐱 GitHub: <a href="${portfolioData.github}" target="_blank" style="color: #4ecdc4;">${portfolioData.github}</a></div>
+<div class="line">💼 LinkedIn: <a href="${portfolioData.linkedin}" target="_blank" style="color: #4ecdc4;">${portfolioData.linkedin}</a></div>
+<div class="line">💬 N'hésitez pas à me contacter pour discuter d'opportunités!</div>
+                `;
+            },
+            
+            experience: () => {
+                return `
+<div class="line"><span class="success">Expérience professionnelle:</span></div>
+<div class="line">2023-Présent: Développeur Full Stack - Entreprise XYZ</div>
+<div class="line">  ▸ Développement d'applications web modernes</div>
+<div class="line">  ▸ Optimisation des performances</div>
+<div class="line">  ▸ Collaboration avec des équipes agiles</div>
+<div class="line">2022-2023: Développeur Junior - StartUp ABC</div>
+<div class="line">  ▸ Création d'APIs RESTful</div>
+<div class="line">  ▸ Intégration de services tiers</div>
+                `;
+            },
+            
+            clear: () => {
+                output.innerHTML = '';
+                return '';
+            },
+            
+            matrix: () => {
+                document.body.style.background = 'linear-gradient(45deg, #003300, #006600)';
+                return `
+<div class="line" style="color: #00ff00; text-shadow: 0 0 20px #00ff00;">
+<span class="success">Mode Matrix activé...</span>
+</div>
+<div class="line" style="color: #00ff00;">Follow the white rabbit... 🐰</div>
+<div class="line" style="color: #00ff00;">Il n'y a pas de cuillère.</div>
+                `;
+            }
+        };
+        
+        function addOutput(content) {
+            const div = document.createElement('div');
+            div.innerHTML = content;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function processCommand(command) {
+            const cmd = command.toLowerCase().trim();
+            
+            // Afficher la commande tapée
+            addOutput(`<div class="line"><span class="prompt">visitor@portfolio:~$</span> <span class="command">${command}</span></div>`);
+            
+            if (commands[cmd]) {
+                const result = commands[cmd]();
+                if (result) {
+                    addOutput(result);
+                }
+            } else if (cmd === '') {
+                // Commande vide, ne rien faire
+            } else {
+                addOutput(`<div class="line"><span class="error">Commande non trouvée: ${cmd}</span></div><div class="line">Tapez 'help' pour voir les commandes disponibles.</div>`);
+            }
+        }
+        
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = input.value;
+                processCommand(command);
+                input.value = '';
+            }
+        });
+        
+        // Auto-focus sur l'input
+        input.focus();
+        
+        // Empêcher la perte de focus
+        document.addEventListener('click', () => {
+            input.focus();
+        });
+    </script>
+</body>
+</html>
